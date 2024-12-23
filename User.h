@@ -48,6 +48,7 @@ protected:
 	string dev;			/**<The device.*/
 	string framedroutes;		/**<The framedroutes, they are stored as a string. If there are more routes, they must be delimited by an ';'*/
 	string framedip;		/**<The framed ip.*/
+	string framedipnet;		/**<The framed ip network.*/
 	string framedroutes6;		/**<The framed IPv6 routes, they are stored as a string. If there are more routes, they must be delimited by an ';'*/
 	string framedip6;		/**<The framed ipv6.*/
 	string callingstationid;	/**<The calling station id, in this case the real ip address of the client.*/
@@ -85,6 +86,9 @@ public:
 	string getFramedIp(void);
 	void setFramedIp(string);
 	
+	string getFramedIpNet(void);
+	void setFramedIpNet(string);
+
 	string getFramedRoutes6(void);
 	void setFramedRoutes6(string);
 	
