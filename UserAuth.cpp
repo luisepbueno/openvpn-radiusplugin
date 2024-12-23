@@ -1520,7 +1520,7 @@ string UserAuth::valueToString(RadiusVendorSpecificAttribute *vsa)
 
 /** The method creates the client config file in the client config dir (ccd).
  * The path is set in the radiusplugin config file.
- * Radius attributes which written to the file are FramedIP as ifconfig-push option and FramedRoutes as iroute option.
+ * Radius attributes which written to the file are FramedIP as ifconfig-push option and FramedRoutes as push route option.
  * @param context : The plugin context.
  * @return An integer, if everything is ok 0, else 1.
  */
@@ -1754,13 +1754,16 @@ int UserAuth::createCcdFile(PluginContext *context)
 										(d1 >>  8) & 0xff,
 										(d1      ) & 0xff);
 							}
-							
+
+							char routestr[60];
+							snprintf(routestr, 60, "push \"route %s %s %s\"", framedip, framednetmask, framedgw);
+
 							if (DEBUG (context->getVerbosity()))
-		    						cerr << getTime() << "RADIUS-PLUGIN: Write route string: iroute " << framedip << framednetmask << " to ccd-file.\n";
-			
-							//write iroute to client file
-							ccdfile << "iroute " << framedip << " "<< framednetmask << "\n";
-						
+								cerr << getTime() << "RADIUS-PLUGIN: Write route string: " << routestr << " to ccd-file.\n";
+
+							//write route to client file
+							ccdfile << routestr << "\n";
+
 							route=strtok(NULL,";");
 					}
 				}
