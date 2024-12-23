@@ -26,6 +26,7 @@ User::User()
 {
 	this->dev="";
 	this->framedip="";
+	this->framedipnet="";
 	this->framedroutes="";
 	this->framedip6="";
 	this->framedroutes6="";
@@ -46,6 +47,7 @@ User::User()
 {
 	this->dev="";
 	this->framedip="";
+	this->framedipnet="";
 	this->framedroutes="";
 	this->framedip6="";
 	this->framedroutes6="";
@@ -213,6 +215,19 @@ string User::getFramedIp(void)
 void User::setFramedIp(string ip)
 {
 	this->framedip=ip;
+}
+
+/** The getter method for the framed ip network.
+ *  @return The framed ip network as a string.*/
+string User::getFramedIpNet(void)
+{
+	return this->framedipnet;
+}
+/** The setter method for the framedipnet.
+ * @param ip The framedipnet.*/
+void User::setFramedIpNet(string ipnet)
+{
+	this->framedipnet=ipnet;
 }
 
 /** The getter method for the framed IPv6 routes.

@@ -250,6 +250,18 @@ void UserAuth::parseResponsePacket(RadiusPacket *packet, PluginContext * context
     	cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: framed ip: " << this->getFramedIp() <<".\n";
 	
 	
+	range=packet->findAttributes(9);
+	iter1=range.first;
+	iter2=range.second;
+
+	if (iter1!=iter2)
+	{
+		this->setFramedIpNet(iter1->second.ipFromBuf());
+	}
+
+	if (DEBUG (context->getVerbosity()))
+		cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: framed ip: " << this->getFramedIpNet() <<".\n";
+
 	
 	range=packet->findAttributes(99);
 	iter1=range.first;
@@ -1580,10 +1592,17 @@ int UserAuth::createCcdFile(PluginContext *context)
 				
 				if(context->conf.getSubnet()[0]!='\0')
 				{
-					strncat(ipstring, context->conf.getSubnet() , 15);
+					// get framed-ip-network received from radius
+					std::string ipnet = this->getFramedIpNet();
+					if (ipnet.length() > 0) {
+						// if radius sent framed-ip-network parameter, use it
+						strncat(ipstring, ipnet.c_str(), 15);
+					} else {
+						// use subnet defined in the configuration file as fallback
+						strncat(ipstring, context->conf.getSubnet() , 15);
+					}
 					if (DEBUG (context->getVerbosity()))
 						cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: Create ifconfig-push for topology subnet.\n";
-			
 				}
 				else if(context->conf.getP2p()[0]!='\0')
 				{
