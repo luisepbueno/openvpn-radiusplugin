@@ -232,12 +232,12 @@ int Config::parseConfigFile(const char * configfile)
 					  if (pos != string::npos) param.erase(0,pos );
 					  pos=param.find_first_of(delims);
 					  if (pos != string::npos) param.erase(pos);
-					  if (param == "client-cert-not-required")
+					  if (param == "verify-client-cert")
 					  {
 						  this->deletechars(&line);
-						  if (line == "client-cert-not-required")
+						  if (line == "verify-client-certoptional" || line == "verify-client-certnone")
 						  {
-							  this->clientcertnotrequired=true;
+						      this->clientcertnotrequired=true;
 						  }
 					  }
 					  if (param == "username-as-common-name")
