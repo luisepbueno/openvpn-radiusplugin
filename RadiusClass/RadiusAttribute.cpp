@@ -591,3 +591,49 @@ string RadiusAttribute::ip6FromBuf(void)
 	}
 	return string(ip3);
 }  
+
+/** The method converts the value into an IPv6 prefix.
+ * The attribute must have the right datatype IP6PREFIX.
+ * @return The ipv6 prefix as a string.
+ */
+string RadiusAttribute::ip6PrefixFromBuf(void)
+{
+	int len;
+	char prefix[44];
+	char octet[3];
+	char prefixLength[4];
+
+	// Get prefix length
+	memset(prefixLength, 0, 4);
+	sprintf(prefixLength, "%d", this->value[1]);
+
+	// Get prefix
+	memset(prefix, 0, 44);
+	memset(octet, 0, 3);
+	len = this->length - 2;
+	if (len > 16) {
+		len = 16;
+	}
+	for (int i = 2; i < 16; i++) {
+		int num = (int)this->value[i];
+		sprintf(octet, "%02x", num);
+		strcat(prefix, octet);
+		if ((i % 2) == 1 && i < (len-1)) {
+			strcat(prefix, ":");
+		}
+	}
+
+	strcat(prefix, "/");
+	strcat(prefix, prefixLength);
+
+	return string(prefix);
+}
+
+/** The method converts the value into an IPv6 prefix length.
+ * The attribute must have the right datatype IP6PREFIX.
+ * @return The ipv6 prefix length.
+ */
+uint8_t RadiusAttribute::ip6PrefixLengthFromBuf(void)
+{
+	return (uint8_t)this->value[1];
+}

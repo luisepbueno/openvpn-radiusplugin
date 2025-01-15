@@ -28,6 +28,7 @@ User::User()
 	this->framedip="";
 	this->framedipnet="";
 	this->framedroutes="";
+	this->framedip6prefix="";
 	this->framedip6="";
 	this->framedroutes6="";
 	this->key="";
@@ -49,6 +50,7 @@ User::User()
 	this->framedip="";
 	this->framedipnet="";
 	this->framedroutes="";
+	this->framedip6prefix="";
 	this->framedip6="";
 	this->framedroutes6="";
 	this->key="";
@@ -79,6 +81,7 @@ User & User::operator=(const User & u)
 	this->dev=u.dev;
 	this->framedip=u.framedip;
 	this->framedroutes=u.framedroutes;
+	this->framedip6prefix=u.framedip6prefix;
 	this->framedip6=u.framedip6;
 	this->framedroutes6=u.framedroutes6;
 	this->key=u.key;
@@ -122,6 +125,7 @@ User::User(const User & u)
 	this->dev=u.dev;
 	this->framedip=u.framedip;
 	this->framedroutes=u.framedroutes;
+	this->framedip6prefix=u.framedip6prefix;
 	this->framedip6=u.framedip6;
 	this->framedroutes6=u.framedroutes6;
 	this->key=u.key;
@@ -242,6 +246,32 @@ string User::getFramedRoutes6(void)
 void User::setFramedRoutes6(string froutes6)
 {
 	this->framedroutes6=froutes6;
+}
+
+/** The getter method for the framed IPv6 prefix.
+ *  @return The framed IPv6 as a string.*/
+string User::getFramedIp6Prefix(void)
+{
+	return this->framedip6prefix;
+}
+/** The setter method for the framedip6prefix.
+ * @param prefix The framedip6prefix.*/
+void User::setFramedIp6Prefix(string prefix)
+{
+	this->framedip6prefix=prefix;
+}
+
+/** The getter method for the framed IPv6 prefix.
+ *  @return The framed IPv6 as a string.*/
+uint8_t User::getFramedIp6PrefixLength(void)
+{
+	return this->framedip6prefixlength;
+}
+/** The setter method for the framedip6prefix.
+ * @param prefix The framedip6prefix.*/
+void User::setFramedIp6PrefixLength(uint8_t prefixLength)
+{
+	this->framedip6prefixlength=prefixLength;
 }
 
 /** The getter method for the framed IPv6.

@@ -158,6 +158,7 @@
   	//ATTRIBUTE	Ascend-Filter			90	string	
   	//ATTRIBUTE	Ascend-Telnet-Profile		91	string	
   	//ATTRIBUTE	NAS-IPv6-Address		95	ipaddr6	
+	//ATTRIBUTE	Framed-IPv6-Prefix		97	ipv6prefix
   	//ATTRIBUTE	Login-IPv6-Host			98	ipaddr6	
   	//ATTRIBUTE	Framed-IPv6-Route		99	string	
   	//ATTRIBUTE	Framed-IPv6-Pool		100	string	

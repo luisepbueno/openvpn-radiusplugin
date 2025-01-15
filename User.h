@@ -50,6 +50,8 @@ protected:
 	string framedip;		/**<The framed ip.*/
 	string framedipnet;		/**<The framed ip network.*/
 	string framedroutes6;		/**<The framed IPv6 routes, they are stored as a string. If there are more routes, they must be delimited by an ';'*/
+	string framedip6prefix;		/**<The framed IPv6 prefix.*/
+	uint8_t framedip6prefixlength;	/**<The framed IPv6 prefix length.*/
 	string framedip6;		/**<The framed ipv6.*/
 	string callingstationid;	/**<The calling station id, in this case the real ip address of the client.*/
 	string key;			/**<A unique key to find the user in a map. */
@@ -92,6 +94,12 @@ public:
 	string getFramedRoutes6(void);
 	void setFramedRoutes6(string);
 	
+	string getFramedIp6Prefix(void);
+	void setFramedIp6Prefix(string);
+
+	uint8_t getFramedIp6PrefixLength(void);
+	void setFramedIp6PrefixLength(uint8_t);
+
 	string getFramedIp6(void);
 	void setFramedIp6(string);
 	

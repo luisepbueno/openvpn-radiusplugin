@@ -69,6 +69,8 @@ public:
 	 
 	string			ipFromBuf(void); 
 	string			ip6FromBuf(void); 
+	string			ip6PrefixFromBuf(void);
+	uint8_t			ip6PrefixLengthFromBuf(void);
 		
 	void			dumpRadiusAttrib(void);
 	

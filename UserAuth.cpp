@@ -281,6 +281,21 @@ void UserAuth::parseResponsePacket(RadiusPacket *packet, PluginContext * context
     	cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: framed ipv6 route: " << this->getFramedRoutes6() <<".\n";
 	
 	
+	range=packet->findAttributes(97);
+	iter1=range.first;
+	iter2=range.second;
+
+
+	if (iter1!=iter2)
+	{
+		this->setFramedIp6Prefix(iter1->second.ip6PrefixFromBuf());
+		this->setFramedIp6PrefixLength(iter1->second.ip6PrefixLengthFromBuf());
+	}
+
+	if (DEBUG (context->getVerbosity()))
+    	cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: framed IPv6 prefix: " << this->getFramedIp6Prefix() <<".\n";
+
+
 	range=packet->findAttributes(168);
 	iter1=range.first;
 	iter2=range.second;	
@@ -1775,10 +1790,17 @@ int UserAuth::createCcdFile(PluginContext *context)
 				if (DEBUG (context->getVerbosity()))
 					cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: Write framed IPv6 to ccd-file.\n";
 			
+				// Get prefix length
+				char prefixLength[4];
+				memset(prefixLength, 0, 4);
+				sprintf(prefixLength, "%d", this->getFramedIp6PrefixLength());
+
 				//build the ifconfig
 				ipstring[0] = 0;
 				strncat(ipstring, "ifconfig-ipv6-push ",19);
 				strncat(ipstring, this->getFramedIp6().c_str() , 39);
+				strncat(ipstring, "/", 1);
+				strncat(ipstring, prefixLength, 3);
 				strncat(ipstring, " ", 1);
 				
 				if(context->conf.getP2p6()[0]!='\0')
