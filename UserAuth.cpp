@@ -1552,7 +1552,7 @@ int UserAuth::createCcdFile(PluginContext *context)
 	char framedroutes[4096];
 	char framedroutes6[4096];
 	char framednetmask_cidr[4]; // ->/128
-	char framednetmask[16]; // ->255.255.255.0
+	char framednetmask[40]; // ->255.255.255.0
 	char framedgw[40];
 	char framedmetric[5]; //what is the biggest metric? 
 	
@@ -1603,7 +1603,6 @@ int UserAuth::createCcdFile(PluginContext *context)
 				strncat(ipstring, "ifconfig-push ",14);
 				strncat(ipstring, this->getFramedIp().c_str() , 15);
 				strncat(ipstring, " ", 1);
-				
 				
 				if(context->conf.getSubnet()[0]!='\0')
 				{
@@ -1904,12 +1903,15 @@ int UserAuth::createCcdFile(PluginContext *context)
 									j++;
 								}
 							}
-																								
+
+							char routestr[150];
+							snprintf(routestr, 150, "push \"route-ipv6 %s %s\"", framedip, framednetmask_cidr, framedgw);
+
 							if (DEBUG (context->getVerbosity()))
-		    						cerr << getTime() << "RADIUS-PLUGIN: Write route string: iroute-ipv6 " << framedip << "/" << framednetmask_cidr << " " << framedgw << " " << framedmetric << " to ccd-file.\n";
-			
-							//write iroute to client file
-							ccdfile << "iroute-ipv6 " << framedip << "/"<< framednetmask_cidr << "\n";
+								cerr << getTime() << "RADIUS-PLUGIN: Write route string: " << routestr << " to ccd-file.\n";
+
+							//write route to client file
+							ccdfile << routestr << "\n";
 						
 							route=strtok(NULL,";");
 					}
