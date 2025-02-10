@@ -135,10 +135,6 @@ void AccountingProcess::Accounting(PluginContext * context)
                         if (DEBUG (context->getVerbosity()))
                             cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND ACCT: User was added to accounting scheduler.\n";
 
-                        //set the system routes
-                        user->addSystemRoutes(context);
-
-
                         string script = context->conf.getVsaScript();
                         //execute vendor specific attribute script
                         if (script.length() > 0)
@@ -229,9 +225,6 @@ void AccountingProcess::Accounting(PluginContext * context)
                 {
                     if (DEBUG (context->getVerbosity()))
                         cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND ACCT: Stop acct: username: " << user->getUsername()<< ", calling station: " << user->getCallingStationId()<< ", commonname: " << user->getCommonname() << ".\n";
-
-                    //delete the system routes
-                    user->delSystemRoutes(context);
 
                     //delete the ccd file which was created at authentication
                     //user->deleteCcdFile(context);
