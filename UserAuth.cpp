@@ -1770,7 +1770,7 @@ int UserAuth::createCcdFile(PluginContext *context)
 							}
 
 							char routestr[60];
-							snprintf(routestr, 60, "push \"route %s %s %s\"", framedip, framednetmask, framedgw);
+							snprintf(routestr, 60, "push \"route %s %s\"", framedip, framednetmask);
 
 							if (DEBUG (context->getVerbosity()))
 								cerr << getTime() << "RADIUS-PLUGIN: Write route string: " << routestr << " to ccd-file.\n";
@@ -1905,7 +1905,7 @@ int UserAuth::createCcdFile(PluginContext *context)
 							}
 
 							char routestr[150];
-							snprintf(routestr, 150, "push \"route-ipv6 %s %s\"", framedip, framednetmask_cidr, framedgw);
+							snprintf(routestr, 150, "push \"route-ipv6 %s/%s\"", framedip, framednetmask_cidr);
 
 							if (DEBUG (context->getVerbosity()))
 								cerr << getTime() << "RADIUS-PLUGIN: Write route string: " << routestr << " to ccd-file.\n";
