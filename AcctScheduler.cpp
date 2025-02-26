@@ -185,47 +185,49 @@ void AcctScheduler::doAccounting(PluginContext * context)
  */
 void AcctScheduler::parseStatusFile(PluginContext *context, uint64_t *bytesin, uint64_t *bytesout, string key)
 {
-	char line[512], newline[512];
-	memset(newline, 0, 512);
-	
+	/*
+	OpenVPN 2.6 status format
+	CLIENT_LIST,Common Name,Real Address,Virtual Address,Virtual IPv6 Address,Bytes Received,Bytes Sent,Connected Since,Connected Since (time_t),Username,Client ID,Peer ID,Data Channel Cipher
+	*/
+
+	bool found = false;
+
 	//open the status file to read
 	ifstream file(context->conf.getStatusFile().c_str(), ios::in);
 	if (file.is_open())
 	{
 		if (DEBUG (context->getVerbosity()))
-			 cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND ACCT: Scheduler: Read Statusfile.\n";
-	  	
-	  	//find the key, is delimited with a ',' from the informations
-	  	
-	  	//loop until the name is found, there is no delimiter, the string
-	  	//"ROUTING TABLE" is found or EOF
+			 cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Scheduler: read status file.\n";
 		
 		do
 		{
-			file.getline(line, 512);
-			
+			string line;
+			getline(file, line);
+
+			vector<string> tokens = AcctScheduler::tokenize(line, ',');
+
+			if (tokens.size() == 13 && tokens[0] == "CLIENT_LIST")
+            {
+                string common_name = tokens[1];
+                string real_address = tokens[2];
+				if (key == common_name + "," + real_address) {
+					*bytesin = std::stoi(tokens[5]);
+					*bytesout = std::stoi(tokens[6]);
+					found = true;
+				}
+            }
 		}
-		while (line!=NULL && strncmp(line,key.c_str(),key.length())!=0 && strcmp(line,"ROUTING TABLE")!=0 && file.eof()==false);
-		
-		
-		//the information is behind the next delimiters
-		if (line!=NULL && strncmp(line,key.c_str(),key.length())==0)
-		{
-			memcpy(newline, line+key.length(), strlen(line)-key.length()+1);
-			*bytesin=strtoull(strtok(newline,","),NULL,10);
-			*bytesout=strtoull(strtok(NULL,","),NULL,10);
-		}
-		else
-		{
-			
-			cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND ACCT: No accounting data was found for "<< key << " in file " << context->conf.getStatusFile() << endl;
-			
-		}
+		while (file.eof() == false);
+
 		file.close();
+		
+		if (!found) {
+			cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: No accounting data was found for "<< key << " in file " << context->conf.getStatusFile() << endl;
+		}
 	}
 	else
 	{
-		cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Statusfile "<< context->conf.getStatusFile() <<" could not opened.\n";
+		cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Status file "<< context->conf.getStatusFile() <<" could not be opened." << endl;
 	}
 }
 
@@ -248,4 +250,25 @@ UserAcct * AcctScheduler::findUser(string key)
 	}
 	
 	return NULL;
+}
+
+const vector<string> AcctScheduler::tokenize(const string &s, const char &c)
+{
+    string buff{""};
+    vector<string> v;
+
+    for (auto n : s)
+    {
+        if (n != c)
+            buff += n;
+        else if (n == c && buff != "")
+        {
+            v.push_back(buff);
+            buff = "";
+        }
+    }
+    if (buff != "")
+        v.push_back(buff);
+
+    return v;
 }
