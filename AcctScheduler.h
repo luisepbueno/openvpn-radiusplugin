@@ -1,7 +1,7 @@
 /*
- *  radiusplugin -- An OpenVPN plugin for do radius authentication 
+ *  radiusplugin -- An OpenVPN plugin for do radius authentication
  *					and accounting.
- * 
+ *
  *  Copyright (C) 2005 EWE TEL GmbH/Ralf Luebben <ralfluebben@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
+
 #ifndef _ACCT_SCHEDULER_H_
 #define _ACCT_SCHEDULER_H_
 
@@ -35,36 +35,35 @@
 
 using std::map;
 
-/**The class is a scheduler for accounting radius users. It calculates the 
+/**The class is a scheduler for accounting radius users. It calculates the
  * accounting interval if the ACCT-INTERIM-INTERVAL was present in the
- * authentication response from the radius server. 
+ * authentication response from the radius server.
  * The start and stop accounting ticket are always sent for a user
  * which is added to the scheduler.
- * For the update and stop accounting ticket the sent and received bytes 
+ * For the update and stop accounting ticket the sent and received bytes
  * are read out of the OpenVpn status file.
  */
 
-
 class AcctScheduler
 {
-	
+
 private:
-	map<string, UserAcct> activeuserlist; 	/**<The map for user with a acct interim interval.*/
-	map<string, UserAcct> passiveuserlist;  /**<The map for user without a acct interim interval.*/
-	
+	map<string, UserAcct> activeuserlist;  /**<The map for user with a acct interim interval.*/
+	map<string, UserAcct> passiveuserlist; /**<The map for user without a acct interim interval.*/
+
 public:
 	AcctScheduler();
 	~AcctScheduler();
-	 
+
 	void addUser(UserAcct *user);
-	void delUser(PluginContext * context, UserAcct *user);
-	void delallUsers(PluginContext * context);
-	
-	UserAcct * findUser(string);
-	 
+	void delUser(PluginContext *context, UserAcct *user);
+	void delallUsers(PluginContext *context);
+
+	UserAcct *findUser(string);
+
 	void doAccounting(PluginContext *);
-	
-	void parseStatusFile(PluginContext *, uint64_t *, uint64_t *,string);
+
+	void parseStatusFile(PluginContext *, uint64_t *, uint64_t *, string);
 
 	static const vector<string> tokenize(const string &s, const char &c);
 };

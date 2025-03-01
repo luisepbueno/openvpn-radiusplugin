@@ -1,7 +1,7 @@
 /*
- *  radiusplugin -- An OpenVPN plugin for do radius authentication 
+ *  radiusplugin -- An OpenVPN plugin for do radius authentication
  *					and accounting.
- * 
+ *
  *  Copyright (C) 2005 EWE TEL GmbH/Ralf Luebben <ralfluebben@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,15 +18,12 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
+
 #include "AcctScheduler.h"
 #include "PluginContext.h"
 #include "RadiusClass/RadiusConfig.h"
 #include "Config.h"
 #include "radiusplugin.h"
-
-
-
 
 using namespace std;
 
@@ -47,81 +44,76 @@ AcctScheduler::~AcctScheduler()
 	passiveuserlist.clear();
 }
 
-/** The method adds an user to the user lists. An user with an acct interim 
+/** The method adds an user to the user lists. An user with an acct interim
  * interval is added to the activeuserlist, an user
  * without this interval is added to passiveuserlist.
  * @param user A pointer to an object from the class UserAcct.
  */
 void AcctScheduler::addUser(UserAcct *user)
 {
-	if (user->getAcctInterimInterval()==0)
+	if (user->getAcctInterimInterval() == 0)
 	{
-		
-		this->passiveuserlist.insert(make_pair(user->getKey(),*user));
+
+		this->passiveuserlist.insert(make_pair(user->getKey(), *user));
 	}
 	else
 	{
-		this->activeuserlist.insert(make_pair(user->getKey(),*user));
+		this->activeuserlist.insert(make_pair(user->getKey(), *user));
 	}
 }
 
-/** The method deletes an user from the user lists. Before 
+/** The method deletes an user from the user lists. Before
  * the user is deleted the status file is parsed for the sent and received bytes
  * and the stop accounting ticket is send to the server.
  * @param context The plugin context as an object from the class PluginContext.
  * @param user A pointer to an object from the class UserAcct
  */
-void AcctScheduler::delUser(PluginContext * context, UserAcct *user)
+void AcctScheduler::delUser(PluginContext *context, UserAcct *user)
 {
-	
-	if (DEBUG (context->getVerbosity()))
-	    cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Got accounting data from file, CN: " << user->getCommonname() << " in: " << user->getBytesIn() << " out: " << user->getBytesOut() << ".\n";
-	
-	
-	//send the stop ticket
-	if (user->sendStopPacket(context)==0)
+
+	if (DEBUG(context->getVerbosity()))
+		cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Got accounting data from file, CN: " << user->getCommonname() << " in: " << user->getBytesIn() << " out: " << user->getBytesOut() << ".\n";
+
+	// send the stop ticket
+	if (user->sendStopPacket(context) == 0)
 	{
-			if (DEBUG (context->getVerbosity()))
-		    	cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Stop packet was sent. CN: " << user->getCommonname() << ".\n";
+		if (DEBUG(context->getVerbosity()))
+			cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Stop packet was sent. CN: " << user->getCommonname() << ".\n";
 	}
-	else 
+	else
 	{
 		cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Error on sending stop packet.";
 	}
-	
-	if (user->getAcctInterimInterval()==0)
+
+	if (user->getAcctInterimInterval() == 0)
 	{
 		passiveuserlist.erase(user->getKey());
 	}
 	else
 	{
-		
+
 		activeuserlist.erase(user->getKey());
 	}
-
 }
 
-
-/** The method deletes all users from the user lists. Before 
+/** The method deletes all users from the user lists. Before
  * the user is deleted the status file is parsed for the sent and received bytes
  * and the stop accounting ticket is send to the server.
  * @param context The plugin context as an object from the class PluginContext.
  */
-void AcctScheduler::delallUsers(PluginContext * context)
+void AcctScheduler::delallUsers(PluginContext *context)
 {
 	map<string, UserAcct>::iterator iter1, iter2;
-	if (DEBUG (context->getVerbosity()))
+	if (DEBUG(context->getVerbosity()))
 		cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Delete all users.";
-	iter1=activeuserlist.begin();
-	iter2=activeuserlist.end();
-		
-	
-	while (iter1!=iter2)
+	iter1 = activeuserlist.begin();
+	iter2 = activeuserlist.end();
+
+	while (iter1 != iter2)
 	{
-		this->delUser(context,&(iter1->second));
+		this->delUser(context, &(iter1->second));
 		iter1++;
 	}
-	
 }
 
 /** The accounting method. When the method is called it
@@ -131,44 +123,45 @@ void AcctScheduler::delallUsers(PluginContext * context)
  * @param context The plugin context as an object from the class PluginContext.
  */
 
-void AcctScheduler::doAccounting(PluginContext * context)
-{	
+void AcctScheduler::doAccounting(PluginContext *context)
+{
 	time_t t;
-		
-	uint64_t bytesin=0, bytesout=0;
+
+	uint64_t bytesin = 0, bytesout = 0;
 	map<string, UserAcct>::iterator iter1, iter2;
-	
-	
-	iter1=activeuserlist.begin();
-	iter2=activeuserlist.end();
-		
-	
-	while (iter1!=iter2)
+
+	iter1 = activeuserlist.begin();
+	iter2 = activeuserlist.end();
+
+	while (iter1 != iter2)
 	{
-		//get the time
+		// get the time
 		time(&t);
-		//if the user needs an update
-		if ( t>=iter1->second.getNextUpdate())
+		// if the user needs an update
+		if (t >= iter1->second.getNextUpdate())
 		{
-			if (DEBUG (context->getVerbosity()))
-		    cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Scheduler: Update for User " << iter1->second.getUsername() << ".\n";
-					
-			this->parseStatusFile(context, &bytesin, &bytesout,iter1->second.getStatusFileKey().c_str()); 
-			if (bytesin > 0 && bytesout > 0){
+			if (DEBUG(context->getVerbosity()))
+				cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Scheduler: Update for User " << iter1->second.getUsername() << ".\n";
+
+			this->parseStatusFile(context, &bytesin, &bytesout, iter1->second.getStatusFileKey().c_str());
+			if (bytesin > 0 && bytesout > 0)
+			{
 				iter1->second.setBytesIn(bytesin & 0xFFFFFFFF);
 				iter1->second.setBytesOut(bytesout & 0xFFFFFFFF);
 				iter1->second.setGigaIn(bytesin >> 32);
 				iter1->second.setGigaOut(bytesout >> 32);
 				iter1->second.sendUpdatePacket(context);
 
-				if (DEBUG (context->getVerbosity()))
+				if (DEBUG(context->getVerbosity()))
 					cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Scheduler: Update packet for User " << iter1->second.getUsername() << " was send.\n";
-			}else{
-				cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Scheduler: Don't update for "<< iter1->second.getUsername() << " because of lack of data.\n";
 			}
-		
-			//calculate the next update
-			iter1->second.setNextUpdate(iter1->second.getNextUpdate()+iter1->second.getAcctInterimInterval());
+			else
+			{
+				cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Scheduler: Don't update for " << iter1->second.getUsername() << " because of lack of data.\n";
+			}
+
+			// calculate the next update
+			iter1->second.setNextUpdate(iter1->second.getNextUpdate() + iter1->second.getAcctInterimInterval());
 		}
 		iter1++;
 	}
@@ -192,13 +185,13 @@ void AcctScheduler::parseStatusFile(PluginContext *context, uint64_t *bytesin, u
 
 	bool found = false;
 
-	//open the status file to read
+	// open the status file to read
 	ifstream file(context->conf.getStatusFile().c_str(), ios::in);
 	if (file.is_open())
 	{
-		if (DEBUG (context->getVerbosity()))
-			 cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Scheduler: read status file.\n";
-		
+		if (DEBUG(context->getVerbosity()))
+			cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Scheduler: read status file.\n";
+
 		do
 		{
 			string line;
@@ -207,27 +200,28 @@ void AcctScheduler::parseStatusFile(PluginContext *context, uint64_t *bytesin, u
 			vector<string> tokens = AcctScheduler::tokenize(line, ',');
 
 			if (tokens.size() == 13 && tokens[0] == "CLIENT_LIST")
-            {
-                string common_name = tokens[1];
-                string real_address = tokens[2];
-				if (key == common_name + "," + real_address) {
+			{
+				string common_name = tokens[1];
+				string real_address = tokens[2];
+				if (key == common_name + "," + real_address)
+				{
 					*bytesin = std::stoi(tokens[5]);
 					*bytesout = std::stoi(tokens[6]);
 					found = true;
 				}
-            }
-		}
-		while (file.eof() == false);
+			}
+		} while (file.eof() == false);
 
 		file.close();
-		
-		if (!found) {
-			cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: No accounting data was found for "<< key << " in file " << context->conf.getStatusFile() << endl;
+
+		if (!found)
+		{
+			cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: No accounting data was found for " << key << " in file " << context->conf.getStatusFile() << endl;
 		}
 	}
 	else
 	{
-		cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Status file "<< context->conf.getStatusFile() <<" could not be opened." << endl;
+		cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND-ACCT: Status file " << context->conf.getStatusFile() << " could not be opened." << endl;
 	}
 }
 
@@ -235,40 +229,40 @@ void AcctScheduler::parseStatusFile(PluginContext *context, uint64_t *bytesin, u
  * @param key The commonname of the user to find.
  * @return A poniter to an object of the class UserAcct.
  */
-UserAcct * AcctScheduler::findUser(string key)
+UserAcct *AcctScheduler::findUser(string key)
 {
 	map<string, UserAcct>::iterator iter;
-	iter=activeuserlist.find(key);
-	if (iter!=activeuserlist.end())
+	iter = activeuserlist.find(key);
+	if (iter != activeuserlist.end())
 	{
 		return &(iter->second);
 	}
-	iter=passiveuserlist.find(key);
-	if (iter!=passiveuserlist.end())
+	iter = passiveuserlist.find(key);
+	if (iter != passiveuserlist.end())
 	{
 		return &(iter->second);
 	}
-	
+
 	return NULL;
 }
 
 const vector<string> AcctScheduler::tokenize(const string &s, const char &c)
 {
-    string buff{""};
-    vector<string> v;
+	string buff{""};
+	vector<string> v;
 
-    for (auto n : s)
-    {
-        if (n != c)
-            buff += n;
-        else if (n == c && buff != "")
-        {
-            v.push_back(buff);
-            buff = "";
-        }
-    }
-    if (buff != "")
-        v.push_back(buff);
+	for (auto n : s)
+	{
+		if (n != c)
+			buff += n;
+		else if (n == c && buff != "")
+		{
+			v.push_back(buff);
+			buff = "";
+		}
+	}
+	if (buff != "")
+		v.push_back(buff);
 
-    return v;
+	return v;
 }

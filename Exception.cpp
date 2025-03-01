@@ -1,7 +1,7 @@
 /*
- *  radiusplugin -- An OpenVPN plugin for do radius authentication 
+ *  radiusplugin -- An OpenVPN plugin for do radius authentication
  *					and accounting.
- * 
+ *
  *  Copyright (C) 2005 EWE TEL GmbH/Ralf Luebben <ralfluebben@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,10 +18,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
+
 #include "Exception.h"
-
-
 
 /**The constructor of the class, it sets the exception number and if
  * the number is known the text for the number.
@@ -30,17 +28,17 @@
 Exception::Exception(int err)
 {
 	errnum = err;
-	switch(err)
+	switch (err)
 	{
-		case Exception::SOCKETRECV:
-			this->errtext="Receiving data from internal socket failed!";
-			break;
-		
-		case Exception::SOCKETSEND:
-			this->errtext="Sending data via internal socket failed!";
-			
-		case Exception::ALREADYAUTHENTICATED:
-			this->errtext="The User is already authenticated. He could not insert in user map. The client connect will fail. In case of rekeying this note is ok.";
+	case Exception::SOCKETRECV:
+		this->errtext = "Receiving data from internal socket failed!";
+		break;
+
+	case Exception::SOCKETSEND:
+		this->errtext = "Sending data via internal socket failed!";
+
+	case Exception::ALREADYAUTHENTICATED:
+		this->errtext = "The User is already authenticated. He could not insert in user map. The client connect will fail. In case of rekeying this note is ok.";
 	}
 }
 
@@ -49,16 +47,16 @@ Exception::Exception(int err)
  */
 Exception::Exception(string txt)
 {
-	this->errnum=-1;
-	this->errtext=txt;
+	this->errnum = -1;
+	this->errtext = txt;
 }
 
 /**The overloading of ostream for the exception class.
  */
-ostream & operator <<(ostream& os, const Exception& e)
+ostream &operator<<(ostream &os, const Exception &e)
 {
-     os <<"Error: " << e.errtext << "\n";
-     return os;
+	os << "Error: " << e.errtext << "\n";
+	return os;
 }
 
 /**The method returns the exception number.

@@ -1,7 +1,7 @@
 /*
- *  radiusplugin -- An OpenVPN plugin for do radius authentication 
+ *  radiusplugin -- An OpenVPN plugin for do radius authentication
  *					and accounting.
- * 
+ *
  *  Copyright (C) 2005 EWE TEL GmbH/Ralf Luebben <ralfluebben@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,46 +18,42 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
+
 #include "UserPlugin.h"
 
 /**The constructor sets the sessionid and sends the portnumber to the
- * constructor of the class User, where the portnumber is set. The flags 
+ * constructor of the class User, where the portnumber is set. The flags
  * authenticated and accounted are set to false.*/
 UserPlugin::UserPlugin() : User()
 {
-	this->accounted=false;
-	this->authenticated=false;
-        this->authcontrolfile="";
-        this->clientconnectdeferfile="";
+	this->accounted = false;
+	this->authenticated = false;
+	this->authcontrolfile = "";
+	this->clientconnectdeferfile = "";
 }
 
 /**The destructor, nothing happens here.*/
 UserPlugin::~UserPlugin()
 {
-	
-		
 }
 
 /**Overloading of the assignment operator.*/
-UserPlugin & UserPlugin::operator=(const UserPlugin &u)
+UserPlugin &UserPlugin::operator=(const UserPlugin &u)
 {
-	if (this!=&u)
+	if (this != &u)
 	{
-		//call the assignment operator of the class User
+		// call the assignment operator of the class User
 		User::operator=(u);
-		this->authenticated=u.authenticated;
-		this->accounted=u.accounted;
-		this->sessionid=u.sessionid;
-		this->password=u.password;
-		this->untrustedport=u.untrustedport;
-                this->authcontrolfile=u.authcontrolfile;
-                this->clientconnectdeferfile=u.clientconnectdeferfile;
+		this->authenticated = u.authenticated;
+		this->accounted = u.accounted;
+		this->sessionid = u.sessionid;
+		this->password = u.password;
+		this->untrustedport = u.untrustedport;
+		this->authcontrolfile = u.authcontrolfile;
+		this->clientconnectdeferfile = u.clientconnectdeferfile;
 	}
 	return *this;
-	
 }
-
 
 /*
 bool UserPlugin::operator<(const UserPlugin & u)
@@ -74,13 +70,13 @@ bool UserPlugin::operator<(const UserPlugin & u)
  * authenticated and accounted are copied.*/
 UserPlugin::UserPlugin(const UserPlugin &u) : User(u)
 {
-	this->sessionid=u.sessionid;
-	this->password=u.password;
-	this->authenticated=u.authenticated;
-	this->accounted=u.accounted;
-	this->untrustedport=u.untrustedport;
-        this->authcontrolfile=u.authcontrolfile;
-        this->clientconnectdeferfile=u.clientconnectdeferfile;
+	this->sessionid = u.sessionid;
+	this->password = u.password;
+	this->authenticated = u.authenticated;
+	this->accounted = u.accounted;
+	this->untrustedport = u.untrustedport;
+	this->authcontrolfile = u.authcontrolfile;
+	this->clientconnectdeferfile = u.clientconnectdeferfile;
 }
 
 /**The getter method of the password.
@@ -93,7 +89,7 @@ string UserPlugin::getPassword(void)
  * @param passwd The password.*/
 void UserPlugin::setPassword(string passwd)
 {
-	this->password=passwd;
+	this->password = passwd;
 }
 
 /** The getter method of the sessionid.
@@ -101,13 +97,13 @@ void UserPlugin::setPassword(string passwd)
  */
 string UserPlugin::getSessionId(void)
 {
-	return this->sessionid;	
+	return this->sessionid;
 }
 /** The setter method of the sessionid.
  * @param id The sessionid.*/
 void UserPlugin::setSessionId(string id)
 {
-	this->sessionid=id;
+	this->sessionid = id;
 }
 
 /** The getter method for authenticated flag.
@@ -122,7 +118,7 @@ bool UserPlugin::isAuthenticated(void)
  */
 void UserPlugin::setAuthenticated(bool auth)
 {
-	this->authenticated=auth;
+	this->authenticated = auth;
 }
 
 /** The getter method for accounted flag.
@@ -133,33 +129,30 @@ bool UserPlugin::isAccounted(void)
 	return this->accounted;
 }
 
-
 /**The setter method for the accounted flag.
  * @param The value for the accounted flag.
  */
 void UserPlugin::setAccounted(bool acct)
 {
-	this->accounted=acct;
+	this->accounted = acct;
 }
 
-string UserPlugin::getAuthControlFile(void )
+string UserPlugin::getAuthControlFile(void)
 {
-  return authcontrolfile;
+	return authcontrolfile;
 }
 
 void UserPlugin::setAuthControlFile(string file)
 {
-  authcontrolfile=file;
+	authcontrolfile = file;
 }
 
-string UserPlugin::getClientConnectDeferFile(void )
+string UserPlugin::getClientConnectDeferFile(void)
 {
-  return clientconnectdeferfile;
+	return clientconnectdeferfile;
 }
 
 void UserPlugin::setClientConnectDeferFile(string file)
 {
-  clientconnectdeferfile=file;
+	clientconnectdeferfile = file;
 }
-
-

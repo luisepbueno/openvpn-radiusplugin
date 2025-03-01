@@ -1,7 +1,7 @@
 /*
- *  radiusplugin -- An OpenVPN plugin for do radius authentication 
+ *  radiusplugin -- An OpenVPN plugin for do radius authentication
  *					and accounting.
- * 
+ *
  *  Copyright (C) 2005 EWE TEL GmbH/Ralf Luebben <ralfluebben@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,10 +18,9 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
+
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
-
 
 #include <stdio.h>
 #include <string.h>
@@ -45,10 +44,10 @@
 #include <sstream>
 #include <iomanip>
 #include <time.h>
-#include<sys/ipc.h>
-#include<sys/msg.h>
-#include<sys/wait.h>
-#include<sys/errno.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/wait.h>
+#include <sys/errno.h>
 #include "RadiusClass/RadiusAttribute.h"
 #include "RadiusClass/RadiusPacket.h"
 #include "RadiusClass/RadiusServer.h"
@@ -74,45 +73,41 @@ using namespace std;
 
 /* Command codes for foreground -> background communication */
 #define COMMAND_VERIFY 0 /**<The verify command for the background process.*/
-#define COMMAND_EXIT   1 /**<The ecit command for the background process.*/
-#define ADD_USER   	   2 /**<The add user command for the background process.*/
-#define DEL_USER	   3 /**<The del user command for the background process.*/
+#define COMMAND_EXIT 1   /**<The ecit command for the background process.*/
+#define ADD_USER 2       /**<The add user command for the background process.*/
+#define DEL_USER 3       /**<The del user command for the background process.*/
 
 /* Response codes for background -> foreground communication */
-#define RESPONSE_INIT_SUCCEEDED   10 	/**< Response code from background process to foreground procce.*/
-#define RESPONSE_INIT_FAILED      11 	/**< Response code from background process to foreground procce.*/
-#define RESPONSE_SUCCEEDED 12 			/**< Response code from background process to foreground procce.*/
-#define RESPONSE_FAILED    13 			/**< Response code from background process to foreground procce.*/
-
-
+#define RESPONSE_INIT_SUCCEEDED 10 /**< Response code from background process to foreground procce.*/
+#define RESPONSE_INIT_FAILED 11    /**< Response code from background process to foreground procce.*/
+#define RESPONSE_SUCCEEDED 12      /**< Response code from background process to foreground procce.*/
+#define RESPONSE_FAILED 13         /**< Response code from background process to foreground procce.*/
 
 /** A struct for additional command line arguments.*/
-struct name_value {
-  const char *name;		/**<The name of name value pair.*/
-  const char *value;	/**<The value of the name value pair.*/
+struct name_value
+{
+  const char *name;  /**<The name of name value pair.*/
+  const char *value; /**<The value of the name value pair.*/
 };
-
 
 #define N_NAME_VALUE 16 /**<The array length for data in the value list.*/
 
 /** A list for the struct name_value.*/
-struct name_value_list {
-  int len;									/**<The length of the list.*/
-  struct name_value data[N_NAME_VALUE]; 	/**<The data of the list.*/
+struct name_value_list
+{
+  int len;                              /**<The length of the list.*/
+  struct name_value data[N_NAME_VALUE]; /**<The data of the list.*/
 };
 
-
-const char * get_env (const char *name, const char *envp[]);
-int string_array_len (const char *array[]);
-void close_fds_except (int keep);
-void set_signals (void);
-string createSessionId (UserPlugin *);
-void get_user_env(PluginContext *, const int type,const char *envp[], UserPlugin *);
-void * auth_user_pass_verify(void *);
-void * client_connect(void *);
+const char *get_env(const char *name, const char *envp[]);
+int string_array_len(const char *array[]);
+void close_fds_except(int keep);
+void set_signals(void);
+string createSessionId(UserPlugin *);
+void get_user_env(PluginContext *, const int type, const char *envp[], UserPlugin *);
+void *auth_user_pass_verify(void *);
+void *client_connect(void *);
 void write_control_file(PluginContext *, string filename, char c);
 string getTime();
-
-
 
 #endif //_PLUGIN_H_

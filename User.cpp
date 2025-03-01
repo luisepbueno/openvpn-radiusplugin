@@ -1,7 +1,7 @@
 /*
- *  radiusplugin -- An OpenVPN plugin for do radius authentication 
+ *  radiusplugin -- An OpenVPN plugin for do radius authentication
  *					and accounting.
- * 
+ *
  *  Copyright (C) 2005 EWE TEL GmbH/Ralf Luebben <ralfluebben@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,28 +18,28 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
+
 #include "User.h"
 
 /** The constructor sets the acctinteriminterval and the portnumber to 0.*/
 User::User()
 {
-	this->dev="";
-	this->framedip="";
-	this->framedipnet="";
-	this->framedroutes="";
-	this->framedip6prefix="";
-	this->framedip6="";
-	this->framedroutes6="";
-	this->key="";
-        this->statusfilekey="";
-	this->untrustedport="";
-//         this->trustedport="";
-//         this->trustedip="";
-	this->acctinteriminterval=0;
-	this->portnumber=0;
-	this->vsabuf=NULL;
-	this->vsabuflen=0;
+	this->dev = "";
+	this->framedip = "";
+	this->framedipnet = "";
+	this->framedroutes = "";
+	this->framedip6prefix = "";
+	this->framedip6 = "";
+	this->framedroutes6 = "";
+	this->key = "";
+	this->statusfilekey = "";
+	this->untrustedport = "";
+	//         this->trustedport="";
+	//         this->trustedip="";
+	this->acctinteriminterval = 0;
+	this->portnumber = 0;
+	this->vsabuf = NULL;
+	this->vsabuflen = 0;
 }
 
 /** The constructor sets the acctinteriminterval to 0 and the portnumber to num.
@@ -64,95 +64,96 @@ User::User()
 /** The destructor.*/
 User::~User()
 {
-	
-	if(this->getVsaBufLen() > 0)
-	{ 
-		delete [] this->getVsaBuf();
+
+	if (this->getVsaBufLen() > 0)
+	{
+		delete[] this->getVsaBuf();
 	}
 }
 
 /** The overloading of the assignment operator.
  * @param u A reference to an object of the User class.
  * @return A reference to the User class.*/
-User & User::operator=(const User & u)
+User &User::operator=(const User &u)
 {
-	this->username=u.username;
-	this->commonname=u.commonname;
-	this->dev=u.dev;
-	this->framedip=u.framedip;
-	this->framedroutes=u.framedroutes;
-	this->framedip6prefix=u.framedip6prefix;
-	this->framedip6=u.framedip6;
-	this->framedroutes6=u.framedroutes6;
-	this->key=u.key;
-        this->statusfilekey=u.statusfilekey;
-	this->callingstationid=u.callingstationid;
-	this->portnumber=u.portnumber;
-	this->acctinteriminterval=u.acctinteriminterval;
-	this->untrustedport=u.untrustedport;
-	this->sessionid=u.sessionid;
-//         this->trustedport=u.trustedport;
-//         this->trustedip=u.trustedip;
-	this->vsabuflen=u.vsabuflen;
-	if(u.vsabuf != NULL)
+	this->username = u.username;
+	this->commonname = u.commonname;
+	this->dev = u.dev;
+	this->framedip = u.framedip;
+	this->framedroutes = u.framedroutes;
+	this->framedip6prefix = u.framedip6prefix;
+	this->framedip6 = u.framedip6;
+	this->framedroutes6 = u.framedroutes6;
+	this->key = u.key;
+	this->statusfilekey = u.statusfilekey;
+	this->callingstationid = u.callingstationid;
+	this->portnumber = u.portnumber;
+	this->acctinteriminterval = u.acctinteriminterval;
+	this->untrustedport = u.untrustedport;
+	this->sessionid = u.sessionid;
+	//         this->trustedport=u.trustedport;
+	//         this->trustedip=u.trustedip;
+	this->vsabuflen = u.vsabuflen;
+	if (u.vsabuf != NULL)
 	{
-		try{
-		  this->vsabuf=new Octet[this->vsabuflen];
-		}
-		catch(...)
+		try
 		{
-		  cerr <<  "RADIUS-PLUGIN: BACKGROUND ACCT: New failed for vsabuflen." << endl;
+			this->vsabuf = new Octet[this->vsabuflen];
 		}
-		
-		
+		catch (...)
+		{
+			cerr << "RADIUS-PLUGIN: BACKGROUND ACCT: New failed for vsabuflen." << endl;
+		}
+
 		memcpy(this->vsabuf, u.vsabuf, this->vsabuflen);
 	}
 	else
 	{
-		this->vsabuf=u.vsabuf;	
-	}	
-	
+		this->vsabuf = u.vsabuf;
+	}
+
 	return *this;
 }
 
 /** The copy constructor.
- * @param u A reference to an object of the User class.*/ 
+ * @param u A reference to an object of the User class.*/
 
-User::User(const User & u)
+User::User(const User &u)
 {
-	this->username=u.username;
-	this->commonname=u.commonname;
-	this->dev=u.dev;
-	this->framedip=u.framedip;
-	this->framedroutes=u.framedroutes;
-	this->framedip6prefix=u.framedip6prefix;
-	this->framedip6=u.framedip6;
-	this->framedroutes6=u.framedroutes6;
-	this->key=u.key;
-        this->statusfilekey=u.statusfilekey;
-	this->callingstationid=u.callingstationid;
-	this->portnumber=u.portnumber;
-	this->acctinteriminterval=u.acctinteriminterval;
-	this->untrustedport=u.untrustedport;
-	this->sessionid=u.sessionid;
-//         this->trustedport=u.trustedport;
-//         this->trustedip=u.trustedip;
-	this->vsabuflen=u.vsabuflen;
-	if(u.vsabuf != NULL)
+	this->username = u.username;
+	this->commonname = u.commonname;
+	this->dev = u.dev;
+	this->framedip = u.framedip;
+	this->framedroutes = u.framedroutes;
+	this->framedip6prefix = u.framedip6prefix;
+	this->framedip6 = u.framedip6;
+	this->framedroutes6 = u.framedroutes6;
+	this->key = u.key;
+	this->statusfilekey = u.statusfilekey;
+	this->callingstationid = u.callingstationid;
+	this->portnumber = u.portnumber;
+	this->acctinteriminterval = u.acctinteriminterval;
+	this->untrustedport = u.untrustedport;
+	this->sessionid = u.sessionid;
+	//         this->trustedport=u.trustedport;
+	//         this->trustedip=u.trustedip;
+	this->vsabuflen = u.vsabuflen;
+	if (u.vsabuf != NULL)
 	{
-		try{
-		  this->vsabuf=new Octet[this->vsabuflen];
-		}
-		catch(...)
+		try
 		{
-		  cerr  << "RADIUS-PLUGIN: BACKGROUND ACCT: New failed for vsabuflen." << endl;
+			this->vsabuf = new Octet[this->vsabuflen];
+		}
+		catch (...)
+		{
+			cerr << "RADIUS-PLUGIN: BACKGROUND ACCT: New failed for vsabuflen." << endl;
 		}
 		memcpy(this->vsabuf, u.vsabuf, this->vsabuflen);
 	}
 	else
 	{
-		this->vsabuf=u.vsabuf;	
-	}	
+		this->vsabuf = u.vsabuf;
+	}
 }
 
 /** The getter method for the username.
@@ -165,7 +166,7 @@ string User::getUsername(void)
  * @param uname The username.*/
 void User::setUsername(string uname)
 {
-	this->username=uname;
+	this->username = uname;
 }
 
 /** The getter method for the commonname.
@@ -178,7 +179,7 @@ string User::getCommonname(void)
  * @param cn The commonname.*/
 void User::setCommonname(string cn)
 {
-	this->commonname=cn;
+	this->commonname = cn;
 }
 
 /** The getter method for the device.
@@ -191,21 +192,21 @@ string User::getDev(void)
  * @param dev The device.*/
 void User::setDev(string dev)
 {
-	this->dev=dev;
+	this->dev = dev;
 }
 
 /** The getter method for the framed routes.
- *  @return The framed routes as a string.*/	
+ *  @return The framed routes as a string.*/
 string User::getFramedRoutes(void)
 {
 	return this->framedroutes;
 }
 /** The setter method for the framedroutes.
- * @param froutes The framedroutes, if there are more 
+ * @param froutes The framedroutes, if there are more
  * routes they are divided through a ';'.*/
 void User::setFramedRoutes(string froutes)
 {
-	this->framedroutes=froutes;
+	this->framedroutes = froutes;
 }
 
 /** The getter method for the framed ip.
@@ -218,7 +219,7 @@ string User::getFramedIp(void)
  * @param ip The framedip.*/
 void User::setFramedIp(string ip)
 {
-	this->framedip=ip;
+	this->framedip = ip;
 }
 
 /** The getter method for the framed ip network.
@@ -231,7 +232,7 @@ string User::getFramedIpNet(void)
  * @param ip The framedipnet.*/
 void User::setFramedIpNet(string ipnet)
 {
-	this->framedipnet=ipnet;
+	this->framedipnet = ipnet;
 }
 
 /** The getter method for the framed IPv6 routes.
@@ -241,11 +242,11 @@ string User::getFramedRoutes6(void)
 	return this->framedroutes6;
 }
 /** The setter method for the framed IPv6 routes.
- * @param froutes6 The framed IPv6 routes, if there are more 
+ * @param froutes6 The framed IPv6 routes, if there are more
  * routes they are divided through a ';'.*/
 void User::setFramedRoutes6(string froutes6)
 {
-	this->framedroutes6=froutes6;
+	this->framedroutes6 = froutes6;
 }
 
 /** The getter method for the framed IPv6 prefix.
@@ -258,7 +259,7 @@ string User::getFramedIp6Prefix(void)
  * @param prefix The framedip6prefix.*/
 void User::setFramedIp6Prefix(string prefix)
 {
-	this->framedip6prefix=prefix;
+	this->framedip6prefix = prefix;
 }
 
 /** The getter method for the framed IPv6 prefix.
@@ -271,7 +272,7 @@ uint8_t User::getFramedIp6PrefixLength(void)
  * @param prefix The framedip6prefix.*/
 void User::setFramedIp6PrefixLength(uint8_t prefixLength)
 {
-	this->framedip6prefixlength=prefixLength;
+	this->framedip6prefixlength = prefixLength;
 }
 
 /** The getter method for the framed IPv6.
@@ -284,7 +285,7 @@ string User::getFramedIp6(void)
  * @param ip The framedip.*/
 void User::setFramedIp6(string ip)
 {
-	this->framedip6=ip;
+	this->framedip6 = ip;
 }
 
 /** The getter method for the fkey.
@@ -298,7 +299,7 @@ string User::getKey(void)
  */
 void User::setKey(string key)
 {
-	this->key=key;
+	this->key = key;
 }
 
 /** The getter method for the status file key.
@@ -312,7 +313,7 @@ string User::getStatusFileKey(void)
  */
 void User::setStatusFileKey(string key)
 {
-	this->statusfilekey=key;
+	this->statusfilekey = key;
 }
 
 /** The getter method for the calling station id.
@@ -325,7 +326,7 @@ string User::getCallingStationId(void)
  * @param id The callingstationid.*/
 void User::setCallingStationId(string id)
 {
-	this->callingstationid=id;
+	this->callingstationid = id;
 }
 
 /** The getter method for the portnumber.
@@ -338,7 +339,7 @@ int User::getPortnumber(void)
  * @param port The portnumber.*/
 void User::setPortnumber(int port)
 {
-	this->portnumber=port;
+	this->portnumber = port;
 }
 
 /** The getter method for the acctinteriminterval.
@@ -351,9 +352,8 @@ time_t User::getAcctInterimInterval(void)
  * @param t  The acctinteriminterval.*/
 void User::setAcctInterimInterval(time_t t)
 {
-	this->acctinteriminterval=t;
+	this->acctinteriminterval = t;
 }
-
 
 /** The getter method for untrusted port.
  * @return untrusted port
@@ -363,13 +363,12 @@ string User::getUntrustedPort(void)
 	return this->untrustedport;
 }
 
-
 /**The setter method for untrusted port.
  * @param The untrusted port number as string.
  */
 void User::setUntrustedPort(string port)
 {
-	this->untrustedport=port;
+	this->untrustedport = port;
 }
 
 /**This method copies the octets form the vendor specific attributes to
@@ -381,42 +380,43 @@ void User::setUntrustedPort(string port)
 
 int User::appendVsaBuf(Octet *value, unsigned int len)
 {
-	if(this->vsabuf == NULL)
-	{	
-		try{
-		  this->vsabuf=new Octet[len];
-		}
-		catch(...)
+	if (this->vsabuf == NULL)
+	{
+		try
 		{
-		  cerr  << "RADIUS-PLUGIN: BACKGROUND ACCT: New failed for vsabuflen." << endl;
+			this->vsabuf = new Octet[len];
+		}
+		catch (...)
+		{
+			cerr << "RADIUS-PLUGIN: BACKGROUND ACCT: New failed for vsabuflen." << endl;
 		}
 		memcpy(this->vsabuf, value, len);
-		this->vsabuflen=len;
-	}	
+		this->vsabuflen = len;
+	}
 	else
 	{
 		Octet old_vsa[this->vsabuflen];
 		memcpy(old_vsa, this->vsabuf, this->vsabuflen);
-		delete [] this->vsabuf;
-		try{
-		  this->vsabuf=new Octet[this->vsabuflen+len];
-		}
-		catch(...)
+		delete[] this->vsabuf;
+		try
 		{
-		  cerr  << "RADIUS-PLUGIN: BACKGROUND ACCT: New failed for vsabuflen." << endl;
+			this->vsabuf = new Octet[this->vsabuflen + len];
+		}
+		catch (...)
+		{
+			cerr << "RADIUS-PLUGIN: BACKGROUND ACCT: New failed for vsabuflen." << endl;
 		}
 		memcpy(this->vsabuf, old_vsa, this->vsabuflen);
-		memcpy((this->vsabuf+this->vsabuflen), value, len);
-		this->vsabuflen=this->vsabuflen+len;
+		memcpy((this->vsabuf + this->vsabuflen), value, len);
+		this->vsabuflen = this->vsabuflen + len;
 	}
 	return 0;
-	
 }
 
 /** Getter method for the vsabuf
  * @return Pointer to the buffer.
  */
-Octet * User::getVsaBuf()
+Octet *User::getVsaBuf()
 {
 	return this->vsabuf;
 }
@@ -424,9 +424,9 @@ Octet * User::getVsaBuf()
 /** Setter method for the vsabuf.
  * @param pbuf Pointer to buffer.
  */
-void User::setVsaBuf(Octet * pbuf)
+void User::setVsaBuf(Octet *pbuf)
 {
-	this->vsabuf=pbuf;
+	this->vsabuf = pbuf;
 }
 
 /** Getter method for the buffer length.
@@ -434,14 +434,14 @@ void User::setVsaBuf(Octet * pbuf)
  */
 unsigned int User::getVsaBufLen()
 {
-	return this->vsabuflen;	
+	return this->vsabuflen;
 }
 /** Setter method for the vsabuf length.
  * @param len Length of the buffer.
  */
 void User::setVsaBufLen(unsigned int len)
 {
-	this->vsabuflen=len;	
+	this->vsabuflen = len;
 }
 
 /** The getter method for the sessionid.
@@ -454,10 +454,8 @@ string User::getSessionId(void)
  * @param id The session id.*/
 void User::setSessionId(string id)
 {
-	this->sessionid=id;
+	this->sessionid = id;
 }
-
-
 
 /** The getter method for trusted port.
  * @return trusted port

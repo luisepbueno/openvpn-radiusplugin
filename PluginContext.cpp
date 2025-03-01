@@ -1,7 +1,7 @@
 /*
- *  radiusplugin -- An OpenVPN plugin for do radius authentication 
+ *  radiusplugin -- An OpenVPN plugin for do radius authentication
  *					and accounting.
- * 
+ *
  *  Copyright (C) 2005 EWE TEL GmbH/Ralf Luebben <ralfluebben@gmx.de>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,31 +18,29 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
+
 #include "PluginContext.h"
-
-
 
 /** The constructor. All sockets all set to -1, the process ids and the
  * verbosity level are set to 0. The session id is set to to 1.*/
 PluginContext::PluginContext()
 {
-	
-  	this->authsocketforegr.setSocket(-1);
-  	this->authsocketbackgr.setSocket(-1);
+
+	this->authsocketforegr.setSocket(-1);
+	this->authsocketbackgr.setSocket(-1);
 	this->acctsocketforegr.setSocket(-1);
 	this->acctsocketbackgr.setSocket(-1);
-  	
-  	this->authpid=0;
-  	this->acctpid=0;
- 	
-  	this->verb=0;
-  	this->sessionid=1;
 
-        this->stopthread=false;
-	this->startthread=true;
+	this->authpid = 0;
+	this->acctpid = 0;
 
-        pthread_mutex_init(&usermutex, NULL);
+	this->verb = 0;
+	this->sessionid = 1;
+
+	this->stopthread = false;
+	this->startthread = true;
+
+	pthread_mutex_init(&usermutex, NULL);
 }
 
 /** The destructor clears the users and nasportlist.*/
@@ -58,33 +56,33 @@ PluginContext::~PluginContext()
  */
 int PluginContext::addNasPort(void)
 {
-	int newport=0;
+	int newport = 0;
 	list<int>::iterator i;
 	list<int>::iterator j;
-	i=nasportlist.begin();
-	j=nasportlist.end();
-	
+	i = nasportlist.begin();
+	j = nasportlist.end();
+
 	if (this->nasportlist.empty())
 	{
-		newport=1;
+		newport = 1;
 		this->nasportlist.push_front(newport);
 	}
-	
+
 	else
 	{
-		newport=1;
-		while( i != this->nasportlist.end()) 
+		newport = 1;
+		while (i != this->nasportlist.end())
 		{
-		    if (newport < *i)
-		    {
-		    	j=i;
-		    	i=this->nasportlist.end();
-		    }
-		    else
-		    {
-		    	i++;
-		    	newport++;
-		    }
+			if (newport < *i)
+			{
+				j = i;
+				i = this->nasportlist.end();
+			}
+			else
+			{
+				i++;
+				newport++;
+			}
 		}
 		this->nasportlist.insert(j, newport);
 	}
@@ -104,13 +102,13 @@ void PluginContext::delNasPort(int num)
  * @param newuser A pointer to the user.
  * @throws Exception::ALREADYAUTHENTICATED if the user could not add to the map, this happens if a user with the key is already in the list.
  */
-void PluginContext::addUser(UserPlugin * newuser)
+void PluginContext::addUser(UserPlugin *newuser)
 {
-	pair<map<string,UserPlugin *>::iterator,bool> success;
-	
-	success=users.insert(make_pair(newuser->getKey(),newuser));
-	
-	if(success.second==false)
+	pair<map<string, UserPlugin *>::iterator, bool> success;
+
+	success = users.insert(make_pair(newuser->getKey(), newuser));
+
+	if (success.second == false)
 	{
 		throw Exception(Exception::ALREADYAUTHENTICATED);
 	}
@@ -118,7 +116,6 @@ void PluginContext::addUser(UserPlugin * newuser)
 	{
 		this->sessionid++;
 	}
-	
 }
 
 /**The method deletes the user from the map with the key.
@@ -126,23 +123,22 @@ void PluginContext::addUser(UserPlugin * newuser)
  */
 void PluginContext::delUser(string key)
 {
-	users.erase(key);	
+	users.erase(key);
 }
 
 /**The method finds a user in the user map.
  * @param key The key of the user.
  * @return A pointer to the user.
  */
-UserPlugin * PluginContext::findUser(string key)
+UserPlugin *PluginContext::findUser(string key)
 {
-	map<string,UserPlugin *>::iterator iter =  users.find(key);
+	map<string, UserPlugin *>::iterator iter = users.find(key);
 	if (iter != users.end())
 	{
 		return iter->second;
 	}
 	return NULL;
 }
-
 
 /** The getter method for the verbosity level.
  * @return The verbosity level.
@@ -157,7 +153,7 @@ int PluginContext::getVerbosity(void)
  */
 void PluginContext::setVerbosity(int v)
 {
-	this->verb=v;
+	this->verb = v;
 }
 
 /** The getter method for the authentication
@@ -165,7 +161,7 @@ void PluginContext::setVerbosity(int v)
  * @returns The process id.
  */
 pid_t PluginContext::getAuthPid(void)
-{				
+{
 	return this->authpid;
 }
 
@@ -175,27 +171,26 @@ pid_t PluginContext::getAuthPid(void)
  */
 void PluginContext::setAuthPid(pid_t p)
 {
-	this->authpid=p;
-} 
+	this->authpid = p;
+}
 
 /** The getter method for the accounting
  * background process id.
  * @returns The process id.
- */	
+ */
 pid_t PluginContext::getAcctPid(void)
 {
 	return this->acctpid;
-}	
+}
 
 /** The setter method for the accounting
  * background process id.
  * @param The process id.
- */		
+ */
 void PluginContext::setAcctPid(pid_t p)
 {
-	this->acctpid=p;
+	this->acctpid = p;
 }
-
 
 /** The setter method method for the session id.
  * @returns The sessionid.
@@ -205,151 +200,144 @@ int PluginContext::getSessionId(void)
 	return this->sessionid;
 }
 
-
 /**The method adds an new user to the user list of users waiting for authentication
  * @param newuser A pointer to the user.
  */
-void PluginContext::addNewUser(UserPlugin * newuser)
+void PluginContext::addNewUser(UserPlugin *newuser)
 {
-  pthread_mutex_lock(&usermutex);
-  this->newusers.push_back(newuser);
-  pthread_mutex_unlock(&usermutex);
+	pthread_mutex_lock(&usermutex);
+	this->newusers.push_back(newuser);
+	pthread_mutex_unlock(&usermutex);
 }
 
 /**The method adds an new user to the user list of users waiting for accounting
  * @param newuser A pointer to the user.
  */
-void PluginContext::addNewAcctUser(UserPlugin * newuser)
+void PluginContext::addNewAcctUser(UserPlugin *newuser)
 {
-  pthread_mutex_lock(&usermutex);
-  this->newacctusers.push_back(newuser);
-  pthread_mutex_unlock(&usermutex);
+	pthread_mutex_lock(&usermutex);
+	this->newacctusers.push_back(newuser);
+	pthread_mutex_unlock(&usermutex);
 }
 
 /**The method return the first element in the list of waiting for authentication users.
  */
-UserPlugin * PluginContext::getNewUser()
+UserPlugin *PluginContext::getNewUser()
 {
-    
-      pthread_mutex_lock(&usermutex);
-      UserPlugin * user = this->newusers.front();
-      this->newusers.pop_front();
-      pthread_mutex_unlock(&usermutex);
-      return user;
-	
+
+	pthread_mutex_lock(&usermutex);
+	UserPlugin *user = this->newusers.front();
+	this->newusers.pop_front();
+	pthread_mutex_unlock(&usermutex);
+	return user;
 }
 
 /**The method return the first element in the list of waiting for accounting users.
  */
-UserPlugin * PluginContext::getNewAcctUser()
+UserPlugin *PluginContext::getNewAcctUser()
 {
-    
-      pthread_mutex_lock(&usermutex);
-      UserPlugin * user = this->newacctusers.front();
-      this->newacctusers.pop_front();
-      pthread_mutex_unlock(&usermutex);
-      return user;
-	
+
+	pthread_mutex_lock(&usermutex);
+	UserPlugin *user = this->newacctusers.front();
+	this->newacctusers.pop_front();
+	pthread_mutex_unlock(&usermutex);
+	return user;
 }
 
-pthread_cond_t  * PluginContext::getCondSend(void )
+pthread_cond_t *PluginContext::getCondSend(void)
 {
-  return &condsend;
+	return &condsend;
 }
-pthread_cond_t  * PluginContext::getCondRecv(void )
+pthread_cond_t *PluginContext::getCondRecv(void)
 {
-  return &condrecv;
-}
-
-pthread_mutex_t * PluginContext::getMutexSend(void )
-{
-  return &mutexsend;
+	return &condrecv;
 }
 
-pthread_mutex_t * PluginContext::getMutexRecv(void )
+pthread_mutex_t *PluginContext::getMutexSend(void)
 {
-  return &mutexrecv;
+	return &mutexsend;
 }
 
-pthread_cond_t  * PluginContext::getAcctCondSend(void )
+pthread_mutex_t *PluginContext::getMutexRecv(void)
 {
-  return &acctcondsend;
-}
-pthread_cond_t  * PluginContext::getAcctCondRecv(void )
-{
-  return &acctcondrecv;
+	return &mutexrecv;
 }
 
-pthread_mutex_t * PluginContext::getAcctMutexSend(void )
+pthread_cond_t *PluginContext::getAcctCondSend(void)
 {
-  return &acctmutexsend;
+	return &acctcondsend;
+}
+pthread_cond_t *PluginContext::getAcctCondRecv(void)
+{
+	return &acctcondrecv;
 }
 
-pthread_mutex_t * PluginContext::getAcctMutexRecv(void )
+pthread_mutex_t *PluginContext::getAcctMutexSend(void)
 {
-  return &acctmutexrecv;
+	return &acctmutexsend;
 }
 
-
-pthread_t * PluginContext::getThread()
+pthread_mutex_t *PluginContext::getAcctMutexRecv(void)
 {
-  return &thread;
+	return &acctmutexrecv;
 }
 
-pthread_t * PluginContext::getAcctThread()
+pthread_t *PluginContext::getThread()
 {
-  return &acctthread;
+	return &thread;
+}
+
+pthread_t *PluginContext::getAcctThread()
+{
+	return &acctthread;
 }
 
 int PluginContext::getResult()
 {
-  return result;
+	return result;
 }
 
 void PluginContext::setResult(int r)
-{ 
-  result=r;
+{
+	result = r;
 }
 
 bool PluginContext::UserWaitingtoAuth()
 {
-  bool result;
+	bool result;
 
-  pthread_mutex_lock(&usermutex);
-  result = this->newusers.size()>0;
-  pthread_mutex_unlock(&usermutex);
-  return result;
-} 
+	pthread_mutex_lock(&usermutex);
+	result = this->newusers.size() > 0;
+	pthread_mutex_unlock(&usermutex);
+	return result;
+}
 
 bool PluginContext::UserWaitingtoAcct()
 {
-  bool result;
+	bool result;
 
-  pthread_mutex_lock(&usermutex);
-  result = this->newacctusers.size()>0;
-  pthread_mutex_unlock(&usermutex);
-  return result;
-} 
-
+	pthread_mutex_lock(&usermutex);
+	result = this->newacctusers.size() > 0;
+	pthread_mutex_unlock(&usermutex);
+	return result;
+}
 
 bool PluginContext::getStopThread()
 {
-  return stopthread;
+	return stopthread;
 }
 
 void PluginContext::setStopThread(bool s)
 {
-  stopthread=s;
+	stopthread = s;
 }
-
 
 bool PluginContext::getStartThread()
 {
-  return startthread;
+	return startthread;
 }
 
 void PluginContext::setStartThread(bool value)
 {
-  startthread=value;
+	startthread = value;
 }
-
