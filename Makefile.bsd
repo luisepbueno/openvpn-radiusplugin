@@ -25,7 +25,8 @@ OBJECTS=\
   main.o \
   UserAcct.o \
   UserPlugin.o \
-  Config.o
+  Config.o \
+  Utils.o
 
 all: $(PLUGIN)
 

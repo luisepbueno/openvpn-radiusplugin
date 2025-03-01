@@ -25,6 +25,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "../Utils.h"
 #define NEED_LIBGCRYPT_VERSION "1.2.0"
 GCRY_THREAD_OPTION_PTHREAD_IMPL;
 
@@ -280,6 +281,7 @@ Octet *RadiusAttribute::getValue(void)
 int RadiusAttribute::setValue(char *value)
 {
 	char tmpStr[20]; // An array to convert the datatype.
+	vector<string> vector_str;
 	int i, j, q,	 // Some counter.
 		passwordlen; // The passwordlength.
 
@@ -343,6 +345,33 @@ int RadiusAttribute::setValue(char *value)
 		this->value[3] = (unsigned char)atoi(tmpStr);
 
 		this->length = 4;
+		break;
+	// Framed-IPv6-Address
+	case ATTRIB_Framed_IPv6_Address:
+		// allocate memory
+		if (!(this->value = new Octet[16]))
+		{
+			return ALLOC_ERROR;
+		}
+		// length
+		this->length = 16;
+		// split IPv6 address
+		vector_str = tokenize(value, ':');
+		if (vector_str.size() != 8)
+		{
+			return BAD_IP;
+		}
+		// convert hexadecimal string to int
+		i = 0;
+		for (auto hextetStr : vector_str)
+		{
+			uint16_t hextet = stoi(hextetStr, nullptr, 16);
+			Octet octetHigh = hextet >> 8 & 0xff;
+			Octet octetLow = hextet & 0x00ff;
+			this->value[i] = octetHigh;
+			this->value[i + 1] = octetLow;
+			i = i + 2;
+		}
 		break;
 	// User-Password
 	case ATTRIB_User_Password:

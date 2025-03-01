@@ -24,6 +24,7 @@
 #include "RadiusClass/RadiusConfig.h"
 #include "Config.h"
 #include "radiusplugin.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -197,7 +198,7 @@ void AcctScheduler::parseStatusFile(PluginContext *context, uint64_t *bytesin, u
 			string line;
 			getline(file, line);
 
-			vector<string> tokens = AcctScheduler::tokenize(line, ',');
+			vector<string> tokens = tokenize(line, ',');
 
 			if (tokens.size() == 13 && tokens[0] == "CLIENT_LIST")
 			{
@@ -244,25 +245,4 @@ UserAcct *AcctScheduler::findUser(string key)
 	}
 
 	return NULL;
-}
-
-const vector<string> AcctScheduler::tokenize(const string &s, const char &c)
-{
-	string buff{""};
-	vector<string> v;
-
-	for (auto n : s)
-	{
-		if (n != c)
-			buff += n;
-		else if (n == c && buff != "")
-		{
-			v.push_back(buff);
-			buff = "";
-		}
-	}
-	if (buff != "")
-		v.push_back(buff);
-
-	return v;
 }
