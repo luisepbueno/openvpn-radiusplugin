@@ -141,6 +141,7 @@ typedef unsigned char Octet;
 #define ATTRIB_Login_IPv6_Host 98         // ipv6addr
 #define ATTRIB_Framed_IPv6_Route 99       // string
 #define ATTRIB_Framed_IPv6_Pool 100       // string
+#define ATTRIB_Framed_IPv6_Address 168    // string
 
 #define VALUE_Service_Type_Call_Check "10"
 #define VALUE_Service_Type_Framed_User "2"
