@@ -199,7 +199,6 @@ void UserAuth::parseResponsePacket(RadiusPacket *packet, PluginContext *context)
 {
 	pair<multimap<Octet, RadiusAttribute>::iterator, multimap<Octet, RadiusAttribute>::iterator> range;
 	multimap<Octet, RadiusAttribute>::iterator iter1, iter2;
-	RadiusVendorSpecificAttribute vsa;
 
 	if (DEBUG(context->getVerbosity()))
 		cerr << getTime() << "RADIUS-PLUGIN: parse_response_packet().\n";
@@ -307,6 +306,23 @@ void UserAuth::parseResponsePacket(RadiusPacket *packet, PluginContext *context)
 	while (iter1 != iter2)
 	{
 		this->appendVsaBuf(iter1->second.getValue(), iter1->second.getLength() - 2);
+
+		RadiusVendorSpecificAttribute vsa;
+		vsa.decodeRecvAttribute(iter1->second.getValue());
+		if (vsa.getId() == 999999) // VPN
+		{
+			if (vsa.getType() == 1) // X-Gateway-IP
+			{
+				this->setGatewayIp(vsa.ipFromBuf());
+				cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: Gateway IP: " << this->getGatewayIp() << endl;
+			}
+			if (vsa.getType() == 2) // X-Gateway-IPv6
+			{
+				this->setGatewayIp6(vsa.ip6FromBuf());
+				cerr << getTime() << "RADIUS-PLUGIN: BACKGROUND AUTH: Gateway IPv6: " << this->getGatewayIp6() << endl;
+			}
+		}
+
 		iter1++;
 	}
 
@@ -433,6 +449,19 @@ int UserAuth::createCcdFile(PluginContext *context)
 
 		if (ccdfile.is_open())
 		{
+			// set the gateway
+			if (this->getGatewayIp() != "")
+			{
+				ccdfile << "push-remove \"route-gateway\"" << "\n";
+				ccdfile << "push \"route-gateway " << this->getGatewayIp() << "\"" << "\n";
+			}
+
+			// set the IPv6 gateway
+			if (this->getGatewayIp6() != "")
+			{
+				ccdfile << "push-remove \"route-ipv6-gateway\"" << "\n";
+				ccdfile << "push \"route-ipv6-gateway " << this->getGatewayIp6() << "\"" << "\n";
+			}
 
 			// set the ip address in the file
 			if (this->framedip[0] != '\0')
@@ -612,7 +641,7 @@ int UserAuth::createCcdFile(PluginContext *context)
 						}
 
 						char routestr[60];
-						snprintf(routestr, 60, "push \"route %s %s %s\"", framedip, framednetmask, framedgw);
+						snprintf(routestr, 60, "push \"route %s %s\"", framedip, framednetmask);
 
 						if (DEBUG(context->getVerbosity()))
 							cerr << getTime() << "RADIUS-PLUGIN: Write route string: " << routestr << " to ccd-file.\n";

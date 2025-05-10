@@ -44,6 +44,8 @@ protected:
 	string username;			   /**<The username.*/
 	string commonname;			   /**<The commonname.*/
 	string dev;					   /**<The device.*/
+	string gatewayip;			   /**<The gateway ip.*/
+	string gatewayip6;			   /**<The gateway ipv6.*/
 	string framedroutes;		   /**<The framedroutes, they are stored as a string. If there are more routes, they must be delimited by an ';'*/
 	string framedip;			   /**<The framed ip.*/
 	string framedipnet;			   /**<The framed ip network.*/
@@ -57,11 +59,9 @@ protected:
 	int portnumber;				   /**<The portnumber.*/
 	time_t acctinteriminterval;	   /**<The acct interim interval.*/
 	string untrustedport;		   /**<The untrusted port number from OpenVPN for a client.*/
-	// string trustedport;		/**<The trusted port number from OpenVPN for a client.*/
-	// string trustedip;		/**<The trusted ip from OpenVPN for a client.*/
-	Octet *vsabuf;			/**<Buffer for all VSA attributes.*/
-	unsigned int vsabuflen; /**<Length of vsabuf.*/
-	string sessionid;		/**<The user sessionid.*/
+	Octet *vsabuf;				   /**<Buffer for all VSA attributes.*/
+	unsigned int vsabuflen;		   /**<Length of vsabuf.*/
+	string sessionid;			   /**<The user sessionid.*/
 
 public:
 	User();
@@ -79,6 +79,12 @@ public:
 
 	string getDev(void);
 	void setDev(string);
+
+	string getGatewayIp(void);
+	void setGatewayIp(string);
+
+	string getGatewayIp6(void);
+	void setGatewayIp6(string);
 
 	string getFramedRoutes(void);
 	void setFramedRoutes(string);
@@ -128,16 +134,6 @@ public:
 
 	string getSessionId(void);
 	void setSessionId(string);
-
-	// 	void setTrustedPort ( const string& theValue );
-	//
-	//
-	// 	string getTrustedPort() const;
-	//
-	// 	void setTrustedIp ( const string& theValue );
-	//
-	//
-	// 	string getTrustedIp() const;
 };
 
 #endif //_USER_H_

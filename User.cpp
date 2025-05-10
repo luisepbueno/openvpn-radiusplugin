@@ -31,35 +31,16 @@ User::User()
 	this->framedip6prefix = "";
 	this->framedip6 = "";
 	this->framedroutes6 = "";
+	this->gatewayip = "";
+	this->gatewayip6 = "";
 	this->key = "";
 	this->statusfilekey = "";
 	this->untrustedport = "";
-	//         this->trustedport="";
-	//         this->trustedip="";
 	this->acctinteriminterval = 0;
 	this->portnumber = 0;
 	this->vsabuf = NULL;
 	this->vsabuflen = 0;
 }
-
-/** The constructor sets the acctinteriminterval to 0 and the portnumber to num.
- * @param num  The portnumber.*/
-/*User::User(int num)
-{
-	this->dev="";
-	this->framedip="";
-	this->framedipnet="";
-	this->framedroutes="";
-	this->framedip6prefix="";
-	this->framedip6="";
-	this->framedroutes6="";
-	this->key="";
-	this->untrustedport="";
-	this->acctinteriminterval=0;
-	this->portnumber=num;
-	this->vsabuf=NULL;
-	this->vsabuflen=0;
-}*/
 
 /** The destructor.*/
 User::~User()
@@ -84,6 +65,8 @@ User &User::operator=(const User &u)
 	this->framedip6prefix = u.framedip6prefix;
 	this->framedip6 = u.framedip6;
 	this->framedroutes6 = u.framedroutes6;
+	this->gatewayip = u.gatewayip;
+	this->gatewayip6 = u.gatewayip6;
 	this->key = u.key;
 	this->statusfilekey = u.statusfilekey;
 	this->callingstationid = u.callingstationid;
@@ -91,8 +74,6 @@ User &User::operator=(const User &u)
 	this->acctinteriminterval = u.acctinteriminterval;
 	this->untrustedport = u.untrustedport;
 	this->sessionid = u.sessionid;
-	//         this->trustedport=u.trustedport;
-	//         this->trustedip=u.trustedip;
 	this->vsabuflen = u.vsabuflen;
 	if (u.vsabuf != NULL)
 	{
@@ -128,6 +109,8 @@ User::User(const User &u)
 	this->framedip6prefix = u.framedip6prefix;
 	this->framedip6 = u.framedip6;
 	this->framedroutes6 = u.framedroutes6;
+	this->gatewayip = u.gatewayip;
+	this->gatewayip6 = u.gatewayip6;
 	this->key = u.key;
 	this->statusfilekey = u.statusfilekey;
 	this->callingstationid = u.callingstationid;
@@ -135,8 +118,6 @@ User::User(const User &u)
 	this->acctinteriminterval = u.acctinteriminterval;
 	this->untrustedport = u.untrustedport;
 	this->sessionid = u.sessionid;
-	//         this->trustedport=u.trustedport;
-	//         this->trustedip=u.trustedip;
 	this->vsabuflen = u.vsabuflen;
 	if (u.vsabuf != NULL)
 	{
@@ -195,6 +176,16 @@ void User::setDev(string dev)
 	this->dev = dev;
 }
 
+string User::getGatewayIp(void)
+{
+	return this->gatewayip;
+}
+
+string User::getGatewayIp6(void)
+{
+	return this->gatewayip6;
+}
+
 /** The getter method for the framed routes.
  *  @return The framed routes as a string.*/
 string User::getFramedRoutes(void)
@@ -207,6 +198,20 @@ string User::getFramedRoutes(void)
 void User::setFramedRoutes(string froutes)
 {
 	this->framedroutes = froutes;
+}
+
+/** The setter method for the gateway ip.
+ * @param gatewayip The gateway ip. */
+void User::setGatewayIp(string gatewayip)
+{
+	this->gatewayip = gatewayip;
+}
+
+/** The setter method for the gateway ip6.
+ * @param gatewayip6 The gateway ip6. */
+void User::setGatewayIp6(string gatewayip6)
+{
+	this->gatewayip6 = gatewayip6;
 }
 
 /** The getter method for the framed ip.
@@ -456,35 +461,3 @@ void User::setSessionId(string id)
 {
 	this->sessionid = id;
 }
-
-/** The getter method for trusted port.
- * @return trusted port
- */
-// string User::getTrustedPort() const
-// {
-// 	return trustedport;
-// }
-
-/**The setter method for trusted port.
- * @param The trusted port number as string.
- */
-// void User::setTrustedPort ( const string& port )
-// {
-// 	trustedport = port;
-// }
-
-/** The getter method for trusted ip.
- * @return trusted ip
- */
-// string User::getTrustedIp() const
-// {
-// 	return trustedip;
-// }
-
-/**The setter method for trusted ip.
- * @param The trusted ip as string.
- */
-// void User::setTrustedIp ( const string& ip )
-// {
-// 	trustedip = ip;
-// }
